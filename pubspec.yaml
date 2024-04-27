@@ -1,7 +1,7 @@
 name: genetom_chess_engine
 description: A chess engine for both player vs player and player vs computer.
 version: 0.0.1
-homepage:
+homepage: https://github.com/ThiruDev50/genetom-chess-engine-flutter
 
 environment:
   sdk: '>=3.0.6 <4.0.0'

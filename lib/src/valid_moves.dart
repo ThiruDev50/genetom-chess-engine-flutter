@@ -1,5 +1,5 @@
 
-import 'package:genetom_chess_engine/src/ChessEngineCore.dart';
+import 'package:genetom_chess_engine/src/chess_engine_core.dart';
 
 class ValidMoves {
   static List<CellPosition> getValidHorseMoves(
@@ -518,12 +518,7 @@ class ValidMoves {
         targetPosition: CellPosition(
             row: filteredPawnMoves[inx].row, col: filteredPawnMoves[inx].col),
       );
-      if (move.currentPosition.row > 7 ||
-          move.targetPosition.row > 7 ||
-          move.currentPosition.col > 7 ||
-          move.targetPosition.col > 7) {
-        print('Out of index at Pawn');
-      }
+      
       if (!checkMateCheckIfThisMovePerformed(board, move, boardViewIsWhite)) {
         validMovesAfterCheckMateCheck.add(filteredPawnMoves[inx]);
       }

@@ -3,8 +3,8 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:genetom_chess_engine/src/ChessEngineCore.dart';
-import 'package:genetom_chess_engine/src/ValidMoves.dart';
+import 'package:genetom_chess_engine/src/chess_engine_core.dart';
+import 'package:genetom_chess_engine/src/valid_moves.dart';
 
 class ChessEngine {
   //Position tables
@@ -44,6 +44,7 @@ class ChessEngine {
     _boardChangeCallback = boardChangeCallback;
     _gameOverCallback = gameOverCallback;
     _pawnPromotion = pawnPromotion;
+    _notifyBoardChangeCallback();
   }
 
   _initializeDifficultyMode() {

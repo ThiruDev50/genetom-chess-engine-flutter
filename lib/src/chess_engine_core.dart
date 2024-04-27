@@ -1,9 +1,11 @@
-// ignore: file_names
+// ignore_for_file: file_names
+
 enum ChessPiece { pawn, rook, bishop, horse, queen, king, emptyCell }
 
 enum GameOver { whiteWins, blackWins, draw }
 
-enum Difficulty {tooEasy,easy,medium,hard,asian}
+enum Difficulty { tooEasy, easy, medium, hard, asian }
+
 Map<ChessPiece, int> chessPieceValue = {
   ChessPiece.pawn: pawnPower,
   ChessPiece.rook: rookPower,
@@ -100,7 +102,10 @@ class ChessConfig {
   bool isAgainstComputer;
   Difficulty difficulty;
   bool isPlayerAWhite;
-  ChessConfig({required this.isPlayerAWhite, required this.isAgainstComputer,  this.difficulty=Difficulty.easy});
+  ChessConfig(
+      {required this.isPlayerAWhite,
+      required this.isAgainstComputer,
+      this.difficulty = Difficulty.easy});
 }
 
 class CellPosition {
@@ -114,11 +119,13 @@ class MovesModel {
   CellPosition targetPosition;
   MovesModel({required this.currentPosition, required this.targetPosition});
 }
-class MovesLogModel{
+
+class MovesLogModel {
   int piece;
   MovesModel move;
   MovesLogModel({required this.move, required this.piece});
 }
+
 class PieceAndPositionModel {
   int piece;
   CellPosition position;
@@ -139,7 +146,6 @@ class MinimaxResult {
   MinimaxResult({required this.moveScore, required this.nodesVisited});
 }
 
-
 class ChessEngineHelpers {
   static List<List<int>> deepCopyBoard(List<List<int>> original) {
     List<List<int>> copy = [];
@@ -152,7 +158,9 @@ class ChessEngineHelpers {
     }
     return copy;
   }
-  static List<List<double>> deepCopyAndReversePositionTable(List<List<double>> original) {
+
+  static List<List<double>> deepCopyAndReversePositionTable(
+      List<List<double>> original) {
     List<List<double>> copy = [];
     for (int i = 0; i < original.length; i++) {
       List<double> rowCopy = [];
@@ -161,7 +169,7 @@ class ChessEngineHelpers {
       }
       copy.add(rowCopy);
     }
-    for(List<double> ele in copy){
+    for (List<double> ele in copy) {
       ele = ele.reversed.toList();
     }
     copy = copy.reversed.toList();

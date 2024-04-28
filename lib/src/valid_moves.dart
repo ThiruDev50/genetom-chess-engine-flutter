@@ -1,4 +1,3 @@
-
 import 'package:genetom_chess_engine/src/chess_engine_core.dart';
 
 class ValidMoves {
@@ -95,7 +94,6 @@ class ValidMoves {
           currentPosition: currPosition,
           targetPosition: CellPosition(
               row: validMovesList[inx].row, col: validMovesList[inx].col));
-     
 
       if (!checkMateCheckIfThisMovePerformed(board, move, boardViewIsWhite)) {
         validMovesAfterCheckMateCheck.add(validMovesList[inx]);
@@ -253,7 +251,6 @@ class ValidMoves {
           currentPosition: currPosition,
           targetPosition: CellPosition(
               row: validMovesList[inx].row, col: validMovesList[inx].col));
-  
 
       if (!checkMateCheckIfThisMovePerformed(board, move, boardViewIsWhite)) {
         validMovesAfterCheckMateCheck.add(validMovesList[inx]);
@@ -339,8 +336,6 @@ class ValidMoves {
       validMovesList.add(CellPosition(row: row + 1, col: col - 1));
     }
 
-    // TODO : Need to add castling move
-
     List<CellPosition> castlingPos =
         getValidCastlingPos(board, currPosition, boardViewIsWhite, movelogs);
 
@@ -352,7 +347,6 @@ class ValidMoves {
           currentPosition: currPosition,
           targetPosition: CellPosition(
               row: validMovesList[inx].row, col: validMovesList[inx].col));
-     
 
       if (!checkMateCheckIfThisMovePerformed(board, move, boardViewIsWhite)) {
         validMovesAfterCheckMateCheck.add(validMovesList[inx]);
@@ -424,11 +418,11 @@ class ValidMoves {
       secondCol -= 1;
     }
     List<CellPosition> eligiblePos = [];
-    if (isFirstRookEligible && currPosition.col - 2>-1) {
+    if (isFirstRookEligible && currPosition.col - 2 > -1) {
       eligiblePos
           .add(CellPosition(row: currPosition.row, col: currPosition.col - 2));
     }
-    if (isSecondRookEligible && currPosition.col + 2<8) {
+    if (isSecondRookEligible && currPosition.col + 2 < 8) {
       eligiblePos
           .add(CellPosition(row: currPosition.row, col: currPosition.col + 2));
     }
@@ -518,7 +512,7 @@ class ValidMoves {
         targetPosition: CellPosition(
             row: filteredPawnMoves[inx].row, col: filteredPawnMoves[inx].col),
       );
-      
+
       if (!checkMateCheckIfThisMovePerformed(board, move, boardViewIsWhite)) {
         validMovesAfterCheckMateCheck.add(filteredPawnMoves[inx]);
       }
@@ -528,7 +522,6 @@ class ValidMoves {
 
   static bool checkMateCheckIfThisMovePerformed(
       List<List<int>> board, MovesModel moves, bool boardViewIsWhite) {
-    
     try {
       bool checkForWhite =
           board[moves.currentPosition.row][moves.currentPosition.col] > 0;
@@ -548,7 +541,6 @@ class ValidMoves {
       board[moves.targetPosition.row][moves.targetPosition.col] = pieceInTarget;
       return res;
     } catch (ex) {
-     
       return false;
     }
   }
@@ -596,6 +588,9 @@ class ValidMoves {
           if (board[eRow][eCol] == oppositeRook ||
               board[eRow][eCol] == oppositeQueen) {
             return true;
+          } else {
+            //Contains Enemy piece which is not a threat, Hence breaking.
+            break;
           }
         } else {
           // The Box is not empty and contain same team piece, So Not possible of check hence breaking.
@@ -619,6 +614,9 @@ class ValidMoves {
           if (board[wRow][wCol] == oppositeRook ||
               board[wRow][wCol] == oppositeQueen) {
             return true;
+          } else {
+            //Contains Enemy piece which is not a threat, Hence breaking.
+            break;
           }
         } else {
           // The Box is not empty and contain same team piece, So Not possible of check hence breaking.
@@ -644,6 +642,9 @@ class ValidMoves {
           if (board[nRow][nCol] == oppositeRook ||
               board[nRow][nCol] == oppositeQueen) {
             return true;
+          } else {
+            //Contains Enemy piece which is not a threat, Hence breaking.
+            break;
           }
         } else {
           // The Box is not empty and contain same team piece, So Not possible of check hence breaking.
@@ -667,6 +668,9 @@ class ValidMoves {
           if (board[sRow][sCol] == oppositeRook ||
               board[sRow][sCol] == oppositeQueen) {
             return true;
+          } else {
+            //Contains Enemy piece which is not a threat, Hence breaking.
+            break;
           }
         } else {
           // The Box is not empty and contain same team piece, So Not possible of check hence breaking.
@@ -701,6 +705,9 @@ class ValidMoves {
           if (board[neRow][neCol] == oppositeBishop ||
               board[neRow][neCol] == oppositeQueen) {
             return true;
+          } else {
+            //Contains Enemy piece which is not a threat, Hence breaking.
+            break;
           }
         } else {
           // The Box is not empty and contain same team piece, So Not possible of check hence breaking.
@@ -735,6 +742,9 @@ class ValidMoves {
           if (board[seRow][seCol] == oppositeBishop ||
               board[seRow][seCol] == oppositeQueen) {
             return true;
+          } else {
+            //Contains Enemy piece which is not a threat, Hence breaking.
+            break;
           }
         } else {
           // The Box is not empty and contain same team piece, So Not possible of check hence breaking.
@@ -768,8 +778,10 @@ class ValidMoves {
           if (board[swRow][swCol] == oppositeBishop ||
               board[swRow][swCol] == oppositeQueen) {
             return true;
+          } else {
+            //Contains Enemy piece which is not a threat, Hence breaking.
+            break;
           }
-          //TODO : Add Pawn Check
         } else {
           // The Box is not empty and contain same team piece, So Not possible of check hence breaking.
           break;
@@ -803,6 +815,9 @@ class ValidMoves {
           if (board[nwRow][nwCol] == oppositeBishop ||
               board[nwRow][nwCol] == oppositeQueen) {
             return true;
+          } else {
+            //Contains Enemy piece which is not a threat, Hence breaking.
+            break;
           }
         } else {
           // The Box is not empty and contain same team piece, So Not possible of check hence breaking.

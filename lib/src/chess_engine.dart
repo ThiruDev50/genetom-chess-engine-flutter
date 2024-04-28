@@ -24,21 +24,34 @@ class ChessEngine {
   List<List<double>> _blackKingMidGameTable = [];
   List<List<double>> _blackKingEndgameTable = [];
 
-  List<List<int>> _board = [];
+  List<List<int>> _board = [
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+  ];
   final List<MovesLogModel> _moveLogs = [];
   int _maxDepth = 1;
   late bool boardViewIsWhite;
   late ChessConfig chessConfig;
   late Function(List<List<int>>) _boardChangeCallback;
-  Function(bool, CellPosition)? _pawnPromotion; //
-  late Function(GameOver) _gameOverCallback; //
+  Function(bool, CellPosition)? _pawnPromotion;
+  late Function(GameOver) _gameOverCallback;
+
+  int _halfMoveClock = 0;
+  int _fullMoveNumber = 0;
+
   ChessEngine(ChessConfig config,
       {required Function(List<List<int>>) boardChangeCallback,
       required Function(GameOver) gameOverCallback,
       Function(bool, CellPosition)? pawnPromotion}) {
     chessConfig = config;
     boardViewIsWhite = chessConfig.isPlayerAWhite;
-    _board = _initializeBoard();
+    _initializeBoard();
     _initializePositionPointsTable();
     _initializeDifficultyMode();
     _boardChangeCallback = boardChangeCallback;
@@ -120,6 +133,14 @@ class ChessEngine {
         kingMidGameSquareTable);
     _whiteKingEndgameTable = ChessEngineHelpers.deepCopyAndReversePositionTable(
         kingEndGameSquareTable);
+  }
+
+  int getHalfMoveClock() {
+    return _halfMoveClock;
+  }
+
+  int getFullMoveNumber() {
+    return _fullMoveNumber;
   }
 
   void _notifyBoardChangeCallback() {
@@ -536,10 +557,32 @@ class ChessEngine {
       int isWhite = currBoard[targetPos.row][targetPos.col] > 0 ? 1 : -1;
       currBoard[targetPos.row][targetPos.col] =
           isWhite * chessPieceValue[piece]!;
+      _notifyBoardChangeCallback();
+    }
+  }
+
+  _updateHalfMoveClock(MovesModel move) {
+    if ((_board[move.currentPosition.row][move.currentPosition.col].abs() ==
+            pawnPower) ||
+        (_board[move.currentPosition.row][move.currentPosition.col] > 0 &&
+            _board[move.targetPosition.row][move.targetPosition.col] < 0) ||
+        (_board[move.currentPosition.row][move.currentPosition.col] < 0 &&
+            _board[move.targetPosition.row][move.targetPosition.col] > 0)) {
+      _halfMoveClock = 0;
+    } else {
+      _halfMoveClock += 1;
+    }
+  }
+
+  _updateFullMoveNumber(MovesModel move) {
+    if (_board[move.currentPosition.row][move.currentPosition.col] < 0) {
+      _fullMoveNumber += 1;
     }
   }
 
   void movePiece(MovesModel move) {
+    _updateHalfMoveClock(move);
+    _updateFullMoveNumber(move);
     if (_canPromotePawn(_board, move)) {
       if (_pawnPromotion != null) {
         bool isWhitePiece =
@@ -602,6 +645,9 @@ class ChessEngine {
   }
 
   GameOver? _checkIfGameOver(bool islastMoveByWhite) {
+    if (_halfMoveClock > 99) {
+      return GameOver.draw;
+    }
     bool onlyKingsInBoard = true;
     for (var rowEle in _board) {
       for (var ele in rowEle) {
@@ -635,101 +681,489 @@ class ChessEngine {
     }
   }
 
-  List<List<int>> _initializeBoard() {
-    List<List<int>> chessBoard = [
-      [
-        -chessPieceValue[ChessPiece.rook]!,
-        -chessPieceValue[ChessPiece.horse]!,
-        -chessPieceValue[ChessPiece.bishop]!,
-        -chessPieceValue[ChessPiece.queen]!,
-        -chessPieceValue[ChessPiece.king]!,
-        -chessPieceValue[ChessPiece.bishop]!,
-        -chessPieceValue[ChessPiece.horse]!,
-        -chessPieceValue[ChessPiece.rook]!,
-      ],
-      [
-        -chessPieceValue[ChessPiece.pawn]!,
-        -chessPieceValue[ChessPiece.pawn]!,
-        -chessPieceValue[ChessPiece.pawn]!,
-        -chessPieceValue[ChessPiece.pawn]!,
-        -chessPieceValue[ChessPiece.pawn]!,
-        -chessPieceValue[ChessPiece.pawn]!,
-        -chessPieceValue[ChessPiece.pawn]!,
-        -chessPieceValue[ChessPiece.pawn]!,
-      ],
-      [
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!
-      ],
-      [
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!
-      ],
-      [
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!
-      ],
-      [
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!,
-        chessPieceValue[ChessPiece.emptyCell]!
-      ],
-      [
-        chessPieceValue[ChessPiece.pawn]!,
-        chessPieceValue[ChessPiece.pawn]!,
-        chessPieceValue[ChessPiece.pawn]!,
-        chessPieceValue[ChessPiece.pawn]!,
-        chessPieceValue[ChessPiece.pawn]!,
-        chessPieceValue[ChessPiece.pawn]!,
-        chessPieceValue[ChessPiece.pawn]!,
-        chessPieceValue[ChessPiece.pawn]!,
-      ],
-      [
-        chessPieceValue[ChessPiece.rook]!,
-        chessPieceValue[ChessPiece.horse]!,
-        chessPieceValue[ChessPiece.bishop]!,
-        chessPieceValue[ChessPiece.queen]!,
-        chessPieceValue[ChessPiece.king]!,
-        chessPieceValue[ChessPiece.bishop]!,
-        chessPieceValue[ChessPiece.horse]!,
-        chessPieceValue[ChessPiece.rook]!,
-      ]
-    ];
-    if (!chessConfig.isPlayerAWhite) {
-      for (int i = 0; i < 2; i++) {
-        for (int j = 0; j < 8; j++) {
-          chessBoard[i][j] = (-1 * chessBoard[i][j]);
+  String getFenString(bool isWhiteTurn) {
+    List<String> fenArr = [];
+    String piecePosFen = '';
+    int emptyCount = 0;
+
+    for (List<int> row in _board) {
+      for (int square in row) {
+        if (square == emptyCellPower) {
+          emptyCount++;
+        } else {
+          if (emptyCount > 0) {
+            piecePosFen += emptyCount.toString();
+            emptyCount = 0;
+          }
+          if (square.abs() == pawnPower) {
+            piecePosFen += square > 0 ? 'P' : 'p';
+          } else if (square.abs() == kingPower) {
+            piecePosFen += square > 0 ? 'K' : 'k';
+          } else if (square.abs() == queenPower) {
+            piecePosFen += square > 0 ? 'Q' : 'q';
+          } else if (square.abs() == bishopPower) {
+            piecePosFen += square > 0 ? 'B' : 'b';
+          } else if (square.abs() == horsePower) {
+            piecePosFen += square > 0 ? 'N' : 'n';
+          } else if (square.abs() == rookPower) {
+            piecePosFen += square > 0 ? 'R' : 'r';
+          }
         }
       }
-      for (int i = 6; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-          chessBoard[i][j] = (-1 * chessBoard[i][j]);
+      if (emptyCount > 0) {
+        piecePosFen += emptyCount.toString();
+        emptyCount = 0;
+      }
+      piecePosFen += '/';
+    }
+    // Remove the trailing "/"
+    piecePosFen = piecePosFen.substring(0, piecePosFen.length - 1);
+
+    //Sending FEN string in White's Perspective
+    if (chessConfig.isPlayerAWhite) {
+      fenArr.add(piecePosFen);
+    } else {
+      fenArr.add(piecePosFen.split('').reversed.toList().join(''));
+    }
+
+    //Adding Turn
+    fenArr.add(isWhiteTurn ? 'w' : 'b');
+
+    //Adding Castling Possibilities
+    String blackQueenSideRook = 'q';
+    String blackKingSideRook = 'k';
+    String whiteQueenSideRook = 'Q';
+    String whiteKingSideRook = 'K';
+
+    int topLeftRook = _board[0][0];
+    int topRightRook = _board[0][7];
+    int bottomLeftRook = _board[7][0];
+    int bottomRightRook = _board[7][7];
+
+    for (var log in _moveLogs) {
+      if (log.piece == kingPower) {
+        whiteQueenSideRook = '';
+        whiteKingSideRook = '';
+        break;
+      }
+      if (log.piece == -kingPower) {
+        blackQueenSideRook = '';
+        blackKingSideRook = '';
+        break;
+      }
+
+      if ((_board[log.move.currentPosition.row][log.move.currentPosition.col] ==
+              topLeftRook) ||
+          (_board[log.move.targetPosition.row][log.move.targetPosition.col] ==
+              topLeftRook)) {
+        if (chessConfig.isPlayerAWhite) {
+          blackQueenSideRook = '';
+        } else {
+          whiteQueenSideRook = '';
+        }
+      }
+      if ((_board[log.move.currentPosition.row][log.move.currentPosition.col] ==
+              topRightRook) ||
+          (_board[log.move.targetPosition.row][log.move.targetPosition.col] ==
+              topRightRook)) {
+        if (chessConfig.isPlayerAWhite) {
+          blackKingSideRook = '';
+        } else {
+          whiteKingSideRook = '';
+        }
+      }
+      if ((_board[log.move.currentPosition.row][log.move.currentPosition.col] ==
+              bottomLeftRook) ||
+          (_board[log.move.targetPosition.row][log.move.targetPosition.col] ==
+              bottomLeftRook)) {
+        if (chessConfig.isPlayerAWhite) {
+          whiteQueenSideRook = '';
+        } else {
+          blackKingSideRook = '';
+        }
+      }
+      if ((_board[log.move.currentPosition.row][log.move.currentPosition.col] ==
+              bottomRightRook) ||
+          (_board[log.move.targetPosition.row][log.move.targetPosition.col] ==
+              bottomRightRook)) {
+        if (chessConfig.isPlayerAWhite) {
+          whiteKingSideRook = '';
+        } else {
+          blackKingSideRook = '';
         }
       }
     }
-    return chessBoard;
+    String castlingPossible = blackQueenSideRook +
+        blackKingSideRook +
+        whiteQueenSideRook +
+        whiteKingSideRook;
+    fenArr.add(castlingPossible.trim().isNotEmpty ? castlingPossible : '-');
+
+    //Adding En pasant target
+    fenArr.add('-');
+
+    //Adding halfMoveClock
+    fenArr.add(_halfMoveClock.toString());
+
+    //Adding fullMoveNumber
+    fenArr.add(_fullMoveNumber.toString());
+    return fenArr.join(' ');
+  }
+
+  int _getPowerFromFENChar(String char) {
+    switch (char) {
+      case 'P':
+        return pawnPower;
+      case 'p':
+        return -pawnPower;
+      case 'K':
+        return kingPower;
+      case 'k':
+        return -kingPower;
+      case 'Q':
+        return queenPower;
+      case 'q':
+        return -queenPower;
+      case 'B':
+        return bishopPower;
+      case 'b':
+        return -bishopPower;
+      case 'N':
+        return horsePower;
+      case 'n':
+        return -horsePower;
+      case 'R':
+        return rookPower;
+      case 'r':
+        return -rookPower;
+      default:
+        return emptyCellPower;
+    }
+  }
+
+  loadFenString(String fenString) {
+    List<String> fenParts = fenString.split(' ');
+
+    // Parse piece positions component
+    String piecePosFen = fenParts[0];
+    List<String> rows = piecePosFen.split('/');
+    //Setting in board
+    for (int i = 0; i < 8; i++) {
+      String row = rows[i];
+      int file = 0;
+
+      for (int j = 0; j < row.length; j++) {
+        String char = row[j];
+
+        if (RegExp(r'[1-8]').hasMatch(char)) {
+          // Empty squares
+          file += int.parse(char);
+        } else {
+          // Piece squares
+          int power = _getPowerFromFENChar(char);
+          _board[i][file] = power;
+          file++;
+        }
+      }
+    }
+
+    if (!chessConfig.isPlayerAWhite) {
+      // _board=ChessEngineHelpers.deepCopyAndReverseBoard(_board);
+    }
+
+    //2. Setting turn
+    //Can leave
+
+    //3. Setting castling details
+    String castlingDetails = fenParts[3];
+    if (!castlingDetails.contains('K')) {
+      if (chessConfig.isPlayerAWhite) {
+        _moveLogs.add(MovesLogModel(
+            move: MovesModel(
+                currentPosition: CellPosition(row: 7, col: 7),
+                targetPosition: CellPosition(row: 0, col: 0)),
+            piece: rookPower));
+      } else {
+        _moveLogs.add(MovesLogModel(
+            move: MovesModel(
+                currentPosition: CellPosition(row: 0, col: 7),
+                targetPosition: CellPosition(row: 0, col: 0)),
+            piece: rookPower));
+      }
+    }
+    if (!castlingDetails.contains('k')) {
+      if (chessConfig.isPlayerAWhite) {
+        _moveLogs.add(MovesLogModel(
+            move: MovesModel(
+                currentPosition: CellPosition(row: 0, col: 7),
+                targetPosition: CellPosition(row: 0, col: 0)),
+            piece: rookPower));
+      } else {
+        _moveLogs.add(MovesLogModel(
+            move: MovesModel(
+                currentPosition: CellPosition(row: 7, col: 7),
+                targetPosition: CellPosition(row: 0, col: 0)),
+            piece: rookPower));
+      }
+    }
+    if (!castlingDetails.contains('Q')) {
+      if (chessConfig.isPlayerAWhite) {
+        _moveLogs.add(MovesLogModel(
+            move: MovesModel(
+                currentPosition: CellPosition(row: 7, col: 0),
+                targetPosition: CellPosition(row: 0, col: 0)),
+            piece: rookPower));
+      } else {
+        _moveLogs.add(MovesLogModel(
+            move: MovesModel(
+                currentPosition: CellPosition(row: 0, col: 0),
+                targetPosition: CellPosition(row: 0, col: 0)),
+            piece: rookPower));
+      }
+    }
+    if (!castlingDetails.contains('q')) {
+      if (chessConfig.isPlayerAWhite) {
+        _moveLogs.add(MovesLogModel(
+            move: MovesModel(
+                currentPosition: CellPosition(row: 0, col: 0),
+                targetPosition: CellPosition(row: 0, col: 0)),
+            piece: rookPower));
+      } else {
+        _moveLogs.add(MovesLogModel(
+            move: MovesModel(
+                currentPosition: CellPosition(row: 7, col: 0),
+                targetPosition: CellPosition(row: 0, col: 0)),
+            piece: rookPower));
+      }
+    }
+    //4. En pasant
+    //Leave
+    //5. Setting halfMoveClock
+    _halfMoveClock = int.tryParse(fenParts[4]) ?? 0;
+    //6. Setting full Move Number
+    _fullMoveNumber = int.tryParse(fenParts[5]) ?? 0;
+  }
+
+  bool isValidFEN(String fenString) {
+    // Split the FEN string into its components
+    List<String> parts = fenString.split(' ');
+
+    // Ensure there are exactly 6 segments
+    if (parts.length != 6) {
+      return false;
+    }
+
+    // Validate each segment individually
+
+    // 1. Piece placement
+    if (!_isValidPiecePlacement(parts[0])) {
+      return false;
+    }
+
+    // 2. Active color
+    if (!_isValidActiveColor(parts[1])) {
+      return false;
+    }
+
+    // 3. Castling availability
+    if (!_isValidCastlingAvailability(parts[2])) {
+      return false;
+    }
+
+    // 4. En passant target square
+    if (!_isValidEnPassantSquare(parts[3])) {
+      return false;
+    }
+
+    // 5. Halfmove clock
+    if (!_isValidHalfmoveClock(parts[4])) {
+      return false;
+    }
+
+    // 6. Fullmove number
+    if (!_isValidFullmoveNumber(parts[5])) {
+      return false;
+    }
+
+    // All segments are valid
+    return true;
+  }
+
+  bool _isValidPiecePlacement(String piecePlacement) {
+    // Check if there are exactly 8 rows separated by '/'
+    List<String> rows = piecePlacement.split('/');
+    if (rows.length != 8) {
+      return false;
+    }
+
+    // Check each row
+    for (String row in rows) {
+      // Validate each character in the row
+      for (int i = 0; i < row.length; i++) {
+        String char = row[i];
+        // Check if the character represents a valid piece or empty square
+        if (!(RegExp(r'[1-8]|[KQRBNPkqrbnp]').hasMatch(char))) {
+          return false;
+        }
+      }
+    }
+
+    // All checks passed, the piece placement segment is valid
+    return true;
+  }
+
+  bool _isValidActiveColor(String activeColor) {
+    // Implement validation logic for active color segment
+    // Ensure it is either 'w' or 'b'
+    return activeColor == 'w' || activeColor == 'b';
+  }
+
+  bool _isValidCastlingAvailability(String castlingAvailability) {
+    // Implement validation logic for castling availability segment
+    // Ensure it consists of valid letters ('K', 'Q', 'k', 'q') or a hyphen '-'
+    return RegExp(r'^(-|[KQkq]{0,4})$').hasMatch(castlingAvailability);
+  }
+
+  bool _isValidEnPassantSquare(String enPassantSquare) {
+    // Implement validation logic for en passant target square segment
+    // Ensure it is a valid square (e.g., 'a3', 'h6') or a hyphen '-'
+    return RegExp(r'^(-|[a-h][36])$').hasMatch(enPassantSquare);
+  }
+
+  bool _isValidHalfmoveClock(String halfmoveClock) {
+    // Implement validation logic for halfmove clock segment
+    // Ensure it is a non-negative integer
+    return int.tryParse(halfmoveClock) != null && int.parse(halfmoveClock) >= 0;
+  }
+
+  bool _isValidFullmoveNumber(String fullmoveNumber) {
+    // Implement validation logic for fullmove number segment
+    // Ensure it is a positive integer
+    return int.tryParse(fullmoveNumber) != null &&
+        int.parse(fullmoveNumber) >= 0;
+  }
+
+  _initializeBoard() {
+    if (chessConfig.fenString.isEmpty) {
+      List<List<int>> chessBoard = [
+        [
+          -chessPieceValue[ChessPiece.rook]!,
+          -chessPieceValue[ChessPiece.horse]!,
+          -chessPieceValue[ChessPiece.bishop]!,
+          -chessPieceValue[ChessPiece.queen]!,
+          -chessPieceValue[ChessPiece.king]!,
+          -chessPieceValue[ChessPiece.bishop]!,
+          -chessPieceValue[ChessPiece.horse]!,
+          -chessPieceValue[ChessPiece.rook]!,
+        ],
+        [
+          -chessPieceValue[ChessPiece.pawn]!,
+          -chessPieceValue[ChessPiece.pawn]!,
+          -chessPieceValue[ChessPiece.pawn]!,
+          -chessPieceValue[ChessPiece.pawn]!,
+          -chessPieceValue[ChessPiece.pawn]!,
+          -chessPieceValue[ChessPiece.pawn]!,
+          -chessPieceValue[ChessPiece.pawn]!,
+          -chessPieceValue[ChessPiece.pawn]!,
+        ],
+        [
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!
+        ],
+        [
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!
+        ],
+        [
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!
+        ],
+        [
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!,
+          chessPieceValue[ChessPiece.emptyCell]!
+        ],
+        [
+          chessPieceValue[ChessPiece.pawn]!,
+          chessPieceValue[ChessPiece.pawn]!,
+          chessPieceValue[ChessPiece.pawn]!,
+          chessPieceValue[ChessPiece.pawn]!,
+          chessPieceValue[ChessPiece.pawn]!,
+          chessPieceValue[ChessPiece.pawn]!,
+          chessPieceValue[ChessPiece.pawn]!,
+          chessPieceValue[ChessPiece.pawn]!,
+        ],
+        [
+          chessPieceValue[ChessPiece.rook]!,
+          chessPieceValue[ChessPiece.horse]!,
+          chessPieceValue[ChessPiece.bishop]!,
+          chessPieceValue[ChessPiece.queen]!,
+          chessPieceValue[ChessPiece.king]!,
+          chessPieceValue[ChessPiece.bishop]!,
+          chessPieceValue[ChessPiece.horse]!,
+          chessPieceValue[ChessPiece.rook]!,
+        ]
+      ];
+      if (!chessConfig.isPlayerAWhite) {
+        for (int i = 0; i < 2; i++) {
+          for (int j = 0; j < 8; j++) {
+            chessBoard[i][j] = (-1 * chessBoard[i][j]);
+          }
+        }
+        for (int i = 6; i < 8; i++) {
+          for (int j = 0; j < 8; j++) {
+            chessBoard[i][j] = (-1 * chessBoard[i][j]);
+          }
+        }
+      }
+      _board = chessBoard;
+    } else {
+      // Load FEN
+      loadFenString(chessConfig.fenString);
+    }
+
+    /*  chessBoard = [
+      [-rookPower, 0, 0, 0, 0, 0, -kingPower, 0],
+      [
+        -pawnPower,
+        -pawnPower,
+        -pawnPower,
+        0,
+        -queenPower,
+        -rookPower,
+        0,
+        -pawnPower
+      ],
+      [0, 0, 0, 0, 0, -horsePower, 0, 0],
+      [0, 0, 0, -pawnPower, 0, 0, 0, -pawnPower],
+      [0, 0, 0, 0, 0, -bishopPower, -bishopPower, 0],
+      [0, bishopPower, pawnPower, 0, 0, pawnPower, 0, 0],
+      [pawnPower, pawnPower, 0, pawnPower, 0, kingPower, 0, 0],
+      [rookPower, 0, bishopPower, 0, 0, 0, horsePower, rookPower]
+    ];
+    return chessBoard; */
   }
 }

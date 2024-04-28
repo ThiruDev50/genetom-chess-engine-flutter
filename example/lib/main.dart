@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:genetom_chess_engine/genetom_chess_engine.dart';
 
@@ -53,11 +54,17 @@ class _ChessPageState extends State<ChessPage> {
     [0, 0, 0, 0, 0, 0, 0, 0]
   ];
 
+  String fenBtnString = '';
+  String fenBtnClickToCopyLabel = 'Copy FEN String';
+  String fenBtnCopiedLabel = 'FEN Copied!';
+  late Color fenBtnContainerColor;
   @override
   void initState() {
     super.initState();
+    fenBtnContainerColor = primaryColor;
+    fenBtnString = fenBtnClickToCopyLabel;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showPopup(context);
+      _showLandingPopup(context);
     });
   }
 
@@ -99,7 +106,7 @@ class _ChessPageState extends State<ChessPage> {
     );
   }
 
-  void _showPopup(BuildContext context) {
+  void _showTeamPickPopup(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -151,11 +158,189 @@ class _ChessPageState extends State<ChessPage> {
     );
   }
 
+  void _showLandingPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: primaryColor,
+          content: Text('How do you want to start the game?',
+              style: TextStyle(color: bgColor, fontWeight: FontWeight.bold)),
+          actions: <Widget>[
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.0),
+                color: bgColor, // Button background color
+              ),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                  _showFenInputPopup(context);
+                },
+                child: Text(
+                  'Import FEN',
+                  style: TextStyle(
+                      color: primaryColor, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.0),
+                color: bgColor, // Button background color
+              ),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                  _showTeamPickPopup(context);
+                },
+                child: Text(
+                  'Start New Game',
+                  style: TextStyle(
+                      color: primaryColor, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showFenInputPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, setState) {
+            return AlertDialog(
+              backgroundColor: primaryColor,
+              title: const Text(
+                'Enter your FEN',
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 1.0,
+                      ),
+                    ),
+                    child: TextField(
+                      controller: fenInpController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          // Use OutlineInputBorder for outline border
+                          borderSide: const BorderSide(
+                              color: Colors.transparent,
+                              width: 1.0), // Border properties
+                          borderRadius: BorderRadius.circular(
+                              8.0), // Optional: border radius
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          // Use the same border for focused state
+                          borderSide: const BorderSide(
+                              color: Colors.transparent,
+                              width: 1.0), // Border properties
+                          borderRadius: BorderRadius.circular(
+                              8.0), // Optional: border radius
+                        ),
+                        hintText: '',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_validateFenInput()) {
+                          Navigator.of(context).pop();
+                          _showTeamPickPopup(context);
+                        } else {
+                          final snackBar = SnackBar(
+                            content: const Text(
+                              'Invalid FEN String',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            duration: const Duration(seconds: 2),
+                            backgroundColor: Colors.red,
+                            action: SnackBarAction(
+                              label: 'Close',
+                              onPressed: () {
+                                // Some action to take when the user presses the action button
+                              },
+                            ),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
+                      },
+                      child: Text(
+                        'Load FEN',
+                        style: TextStyle(color: primaryColor),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  TextEditingController fenInpController = TextEditingController();
+  bool _validateFenInput() {
+    String input = fenInpController.text.trim();
+    var chessEngCopy = ChessEngine(ChessConfig(isPlayerAWhite: true),
+        boardChangeCallback: (a) {}, gameOverCallback: (a) {});
+    bool isValidFen = chessEngCopy.isValidFEN(input);
+    return isValidFen;
+  }
+
+  String reverseString(String str) {
+    String reversed = '';
+    for (int i = str.length - 1; i >= 0; i--) {
+      reversed += str[i];
+    }
+    return reversed;
+  }
+
   initializeChessEngine(bool isWhite) {
     isPlayerWhite = isWhite;
-    isPlayerTurn = isPlayerWhite;
+    String fenInput = fenInpController.text.trim();
+    List<String> parts = fenInpController.text.trim().split(' ');
+
+    if (fenInpController.text.trim().isEmpty) {
+      //NO FEN so Current Turn is white
+      isPlayerTurn = isPlayerWhite;
+    } else {
+      if ((parts[1] == 'w' && isPlayerWhite) ||
+          parts[1] == 'b' && !isPlayerWhite) {
+        isPlayerTurn = true;
+      } else {
+        isPlayerTurn = false;
+      }
+    }
+
+    if (!isPlayerWhite && fenInpController.text.trim().isNotEmpty) {
+      //Reverse FEN String
+      var reversedFenPos = parts[0].split('').reversed.join('');
+      parts[0] = reversedFenPos;
+      fenInput = parts.join(' ');
+    }
     ChessConfig config = ChessConfig(
-        isAgainstComputer: true,
+        fenString: fenInput,
         isPlayerAWhite: isPlayerWhite,
         difficulty: Difficulty.medium);
     chessEngine = ChessEngine(
@@ -168,7 +353,6 @@ class _ChessPageState extends State<ChessPage> {
           piece = ChessPiece.queen;
         }
         chessEngine.setPawnPromotion(targetPosition, piece);
-        reloadBoard();
       },
       boardChangeCallback: (newData) {
         boardData = newData;
@@ -184,8 +368,7 @@ class _ChessPageState extends State<ChessPage> {
         }
       },
     );
-
-    if (!isPlayerWhite) {
+    if (!isPlayerTurn) {
       Future.delayed(const Duration(seconds: 1), () {
         computerTurn();
       });
@@ -241,10 +424,67 @@ class _ChessPageState extends State<ChessPage> {
         backgroundColor: primaryColor,
       ),
       body: Center(
-        child: SizedBox(
-          height: dialogSize,
-          width: dialogSize,
-          child: _chessBoard(),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              height: dialogSize,
+              width: dialogSize,
+              child: _chessBoard(),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () {
+                  bool isWhiteTurn = false;
+                  if (isPlayerTurn) {
+                    if (isPlayerWhite) {
+                      isWhiteTurn = true;
+                    } else {
+                      isWhiteTurn = false;
+                    }
+                  } else {
+                    if (isPlayerWhite) {
+                      isWhiteTurn = false;
+                    } else {
+                      isWhiteTurn = true;
+                    }
+                  }
+                  Clipboard.setData(ClipboardData(
+                      text: chessEngine.getFenString(isWhiteTurn)));
+                  fenBtnString = fenBtnCopiedLabel;
+                  fenBtnContainerColor = Colors.green;
+                  setState(() {});
+                  Future.delayed(
+                    const Duration(seconds: 2),
+                    () {
+                      fenBtnString = fenBtnClickToCopyLabel;
+                      fenBtnContainerColor = primaryColor;
+                      setState(() {});
+                    },
+                  );
+                },
+                child: Container(
+                  width: 200,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: fenBtnContainerColor),
+                  padding: const EdgeInsets.all(10),
+                  child: Center(
+                      child: Text(
+                    fenBtnString,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.white),
+                  )),
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );
@@ -260,7 +500,7 @@ class _ChessPageState extends State<ChessPage> {
       itemBuilder: (BuildContext context, int index) {
         // Determine the color of the square based on its position
         Color color =
-            ((index ~/ 8) + (index % 8)) % 2 == 0 ? primaryColor : Colors.white;
+            ((index ~/ 8) + (index % 8)) % 2 == 0 ? Colors.white : primaryColor;
         // print(currBox.row.toString()+currBox.col.toString());
         for (var element in validMoves) {
           if (element.row == (index ~/ 8) && element.col == (index % 8)) {
@@ -336,22 +576,40 @@ class _ChessPageState extends State<ChessPage> {
       reloadBoard();
     }
 
-    return GestureDetector(
-      onTap: () async {
-        await blockClicked();
-      },
-      child: Container(
-        decoration:
-            BoxDecoration(border: Border.all(color: Colors.green, width: 1)),
+    BorderRadiusGeometry? borderRadius;
+    double curve = 15;
+    if (row == 0 && col == 0) {
+      borderRadius = BorderRadius.only(topLeft: Radius.circular(curve));
+    } else if (row == 0 && col == 7) {
+      borderRadius = BorderRadius.only(topRight: Radius.circular(curve));
+    } else if (row == 7 && col == 0) {
+      borderRadius = BorderRadius.only(bottomLeft: Radius.circular(curve));
+    } else if (row == 7 && col == 7) {
+      borderRadius = BorderRadius.only(bottomRight: Radius.circular(curve));
+    }
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () async {
+          await blockClicked();
+        },
         child: Container(
-          width: 30.0,
-          height: 30.0,
-          color: color,
+          decoration: BoxDecoration(
+              borderRadius: borderRadius,
+              border: Border.all(color: Colors.green, width: 1)),
           child: Container(
-            padding: const EdgeInsets.all(5),
-            child: pieceImgPath.isNotEmpty
-                ? SvgPicture.asset(pieceImgPath)
-                : const SizedBox.shrink(),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: borderRadius,
+            ),
+            width: 30.0,
+            height: 30.0,
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              child: pieceImgPath.isNotEmpty
+                  ? SvgPicture.asset(pieceImgPath)
+                  : const SizedBox.shrink(),
+            ),
           ),
         ),
       ),

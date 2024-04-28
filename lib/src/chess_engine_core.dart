@@ -99,12 +99,12 @@ const List<List<double>> rookSquareTable = [
 ];
 
 class ChessConfig {
-  bool isAgainstComputer;
+  String fenString;
   Difficulty difficulty;
   bool isPlayerAWhite;
   ChessConfig(
       {required this.isPlayerAWhite,
-      required this.isAgainstComputer,
+      this.fenString = '',
       this.difficulty = Difficulty.easy});
 }
 
@@ -126,24 +126,10 @@ class MovesLogModel {
   MovesLogModel({required this.move, required this.piece});
 }
 
-class PieceAndPositionModel {
-  int piece;
-  CellPosition position;
-  PieceAndPositionModel({required this.piece, required this.position});
-}
-
 class MoveScore {
   MovesModel? move;
   double score;
-
   MoveScore({required this.move, required this.score});
-}
-
-class MinimaxResult {
-  MoveScore moveScore;
-  int nodesVisited;
-
-  MinimaxResult({required this.moveScore, required this.nodesVisited});
 }
 
 class ChessEngineHelpers {
@@ -170,6 +156,22 @@ class ChessEngineHelpers {
       copy.add(rowCopy);
     }
     for (List<double> ele in copy) {
+      ele = ele.reversed.toList();
+    }
+    copy = copy.reversed.toList();
+    return copy;
+  }
+
+  static List<List<int>> deepCopyAndReverseBoard(List<List<int>> original) {
+    List<List<int>> copy = [];
+    for (int i = 0; i < original.length; i++) {
+      List<int> rowCopy = [];
+      for (int j = 0; j < original[i].length; j++) {
+        rowCopy.add(original[i][j]);
+      }
+      copy.add(rowCopy);
+    }
+    for (List<int> ele in copy) {
       ele = ele.reversed.toList();
     }
     copy = copy.reversed.toList();

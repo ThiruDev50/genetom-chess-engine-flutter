@@ -1,6 +1,7 @@
 import 'package:genetom_chess_engine/src/chess_engine_core.dart';
 
 class ValidMoves {
+  ///This method is used to find the Valid horse move in the given board.
   static List<CellPosition> getValidHorseMoves(
       List<List<int>> board, CellPosition currPosition, bool boardViewIsWhite) {
     int row = currPosition.row;
@@ -102,6 +103,7 @@ class ValidMoves {
     return validMovesAfterCheckMateCheck;
   }
 
+  ///This method is used to find the Valid rook move in the given board.
   static List<CellPosition> getValidRookMoves(
       List<List<int>> board, CellPosition currPosition, bool boardViewIsWhite) {
     int row = currPosition.row;
@@ -172,6 +174,7 @@ class ValidMoves {
     return validMovesAfterCheckMateCheck;
   }
 
+  ///This method is used to find the Valid bishop move in the given board.
   static List<CellPosition> getValidBishopMoves(
       List<List<int>> board, CellPosition currPosition, bool boardViewIsWhite) {
     List<CellPosition> validMovesList = [];
@@ -259,6 +262,7 @@ class ValidMoves {
     return validMovesAfterCheckMateCheck;
   }
 
+  ///This method is used to find the Valid queen move in the given board.
   static List<CellPosition> getValidQueenMoves(
       List<List<int>> board, CellPosition currPosition, bool boardViewIsWhite) {
     var rookMoves = getValidRookMoves(board, currPosition, boardViewIsWhite);
@@ -268,6 +272,7 @@ class ValidMoves {
     return bishopMoves + rookMoves;
   }
 
+  ///This method is used to find the Valid king move in the given board.
   static List<CellPosition> getValidKingMove(
       List<List<int>> board,
       CellPosition currPosition,
@@ -356,6 +361,7 @@ class ValidMoves {
     return validMovesAfterCheckMateCheck;
   }
 
+  ///This method is used to find the Valid castling move in the given board.
   static List<CellPosition> getValidCastlingPos(
       List<List<int>> currBoard,
       CellPosition currPosition,
@@ -429,6 +435,7 @@ class ValidMoves {
     return eligiblePos;
   }
 
+  ///This method is used to find the Valid pawn move in the given board.
   static List<CellPosition> getValidPawnMove(
       List<List<int>> board, CellPosition currPosition, bool boardViewIsWhite) {
     List<CellPosition> validMovesList = [];
@@ -520,6 +527,7 @@ class ValidMoves {
     return validMovesAfterCheckMateCheck;
   }
 
+  ///This method is used to find if board will be under check mate if this move performed.
   static bool checkMateCheckIfThisMovePerformed(
       List<List<int>> board, MovesModel moves, bool boardViewIsWhite) {
     try {
@@ -545,6 +553,7 @@ class ValidMoves {
     }
   }
 
+  ///This method is used to find check mate check for the board.
   static bool checkMateCheckForThisBoard(
       List<List<int>> board, bool checkForWhite, bool boardViewIsWhite) {
     int row = 0;
@@ -672,7 +681,7 @@ class ValidMoves {
             //Contains Enemy piece which is not a threat, Hence breaking.
             break;
           }
-        } else {  
+        } else {
           // The Box is not empty and contain same team piece, So Not possible of check hence breaking.
           break;
         }

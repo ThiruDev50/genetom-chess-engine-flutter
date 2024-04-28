@@ -60,6 +60,7 @@ class ChessEngine {
     _notifyBoardChangeCallback();
   }
 
+  ///This Method will Initialize Difficult Mode.
   _initializeDifficultyMode() {
     if (chessConfig.difficulty == Difficulty.tooEasy) {
       _maxDepth = 2;
@@ -74,6 +75,7 @@ class ChessEngine {
     }
   }
 
+  ///This wi;; initialize the Position table.
   _initializePositionPointsTable() {
     if (chessConfig.isPlayerAWhite) {
       //If player is white PSQT is => Bottom=White, Top=Black
@@ -85,6 +87,7 @@ class ChessEngine {
     }
   }
 
+  ///This will set bottom to Top position.
   _setBottomToTopPositionPoints() {
     _whitePawnTable = pawnSquareTable;
     _whiteHorseTable = horseSquareTable;
@@ -110,6 +113,7 @@ class ChessEngine {
         kingEndGameSquareTable);
   }
 
+  ///This will set top to bottom to position.
   _setTopToBottomPositionPoints() {
     _blackPawnTable = pawnSquareTable;
     _blackHorseTable = horseSquareTable;
@@ -135,30 +139,37 @@ class ChessEngine {
         kingEndGameSquareTable);
   }
 
+  ///This method will return the half clock move for the board.
   int getHalfMoveClock() {
     return _halfMoveClock;
   }
 
+  ///This method will return theFull move number for the board.
   int getFullMoveNumber() {
     return _fullMoveNumber;
   }
 
+  ///This private methid is used to help notify the user about board change.
   void _notifyBoardChangeCallback() {
     _boardChangeCallback(_board);
   }
 
+  ///This private methid is used to help notify the user about board gameover status.
   void _notifyGameOverStatus(GameOver status) {
     _gameOverCallback(status);
   }
 
+  ///This method will return the board data in a 2D format.
   List<List<int>> getBoardData() {
     return _board;
   }
 
+  ///This method will return the Move Logs Data.
   List<MovesLogModel> getMovesLogsData() {
     return _moveLogs;
   }
 
+  ///This method will be used to return the best possible legal move.
   Future<MovesModel?> generateBestMove() async {
     await Future.delayed(const Duration(milliseconds: 10));
     double alpha = -double.infinity;
@@ -169,6 +180,7 @@ class ChessEngine {
     return res.move;
   }
 
+  ///This method will be used to return the random legal possible move.
   MovesModel? generateRandomMove() {
     List<CellPosition> allowedPeiceCoordinates = _getAllowedPieceCoordinates();
     allowedPeiceCoordinates.shuffle();
@@ -187,6 +199,7 @@ class ChessEngine {
     return null;
   }
 
+  ///This private method is used for Internal purpose.
   List<CellPosition> _getAllowedPieceCoordinates() {
     List<CellPosition> allowedPiecesPosition = [];
 
@@ -202,6 +215,8 @@ class ChessEngine {
 
     return allowedPiecesPosition;
   }
+
+  ///This private method is used for Internal purpose.
 
   List<MovesModel> _getWhitePossibleMove(List<List<int>> boardCopy) {
     List<MovesModel> movesList = [];
@@ -222,6 +237,7 @@ class ChessEngine {
     return movesList;
   }
 
+  ///This private method is used for Internal purpose.
   List<MovesModel> _getBlackPossibleMove(List<List<int>> boardCopy) {
     List<MovesModel> movesList = [];
     for (int i = 0; i < 8; i++) {
@@ -241,6 +257,7 @@ class ChessEngine {
     return movesList;
   }
 
+  ///This method help to get the legal position of a piece in a board by its position.
   List<CellPosition> getValidMovesOfPeiceByPosition(
       List<List<int>> currBoard, CellPosition currentPosition) {
     var peice = currBoard[currentPosition.row][currentPosition.col];
@@ -269,40 +286,8 @@ class ChessEngine {
     return movesWithPossibleCheck;
   }
 
-  bool checkMateCheckIfThisBoardInCheck(
-      List<List<int>> curBoard, bool checkForWhiteKingCheckMate) {
-    CellPosition kingPos = CellPosition(row: -1, col: -1);
-    for (int i = 0; i < 8; i++) {
-      for (int j = 0; j < 8; j++) {
-        if (curBoard[i][j].abs() == kingPower) {
-          if (checkForWhiteKingCheckMate && curBoard[i][j] > 0) {
-            kingPos = CellPosition(row: i, col: j);
-            break;
-          } else if (!checkForWhiteKingCheckMate && curBoard[i][j] < 0) {
-            kingPos = CellPosition(row: i, col: j);
-            break;
-          }
-        }
-      }
-    }
-
-    //Generate all Enemy possible moves,
-    List<MovesModel> possibleOpponentsMove = [];
-    if (checkForWhiteKingCheckMate) {
-      possibleOpponentsMove = _getBlackPossibleMove(curBoard);
-    } else {
-      possibleOpponentsMove = _getWhitePossibleMove(curBoard);
-    }
-    for (MovesModel possibleMove in possibleOpponentsMove) {
-      if (possibleMove.targetPosition.row == kingPos.row ||
-          possibleMove.targetPosition.col == kingPos.col) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  bool isGameOverForThisBoard(List<List<int>> currBoard) {
+  ///This private method is used for Internal purpose.
+  bool _isGameOverForThisBoard(List<List<int>> currBoard) {
     int kingCount = 0;
     for (List<int> ele in currBoard) {
       for (int item in ele) {
@@ -317,9 +302,10 @@ class ChessEngine {
     return true;
   }
 
+  ///This private method is used for Internal purpose.
   MoveScore _minimaxWithMoveAlphaBetaPruning(
       currBoard, depth, alpha, beta, maximizingPlayer) {
-    if (depth == 0 || isGameOverForThisBoard(currBoard)) {
+    if (depth == 0 || _isGameOverForThisBoard(currBoard)) {
       return MoveScore(move: null, score: _getScoreForBoard(currBoard));
     }
 
@@ -377,6 +363,7 @@ class ChessEngine {
     }
   }
 
+  ///This private method is used for Internal purpose.
   double _getScoreForBoard(List<List<int>> currBoard) {
     double overallScore = 0;
 
@@ -388,6 +375,7 @@ class ChessEngine {
     return overallScore;
   }
 
+  ///This private method is used for Internal purpose.
   double _getMaterialScore(List<List<int>> currBoard) {
     double materialScore = 0;
 
@@ -428,6 +416,7 @@ class ChessEngine {
     return materialScore;
   }
 
+  ///This private method is used for Internal purpose.
   double _getPositionalScore(List<List<int>> currBoard) {
     double positionalScore = 0;
     for (int row = 0; row < currBoard.length; row++) {
@@ -488,6 +477,7 @@ class ChessEngine {
     return positionalScore;
   }
 
+  ///This private method is used for Internal purpose.
   bool _isEndGame(List<List<int>> curBoard, bool endGameCheckForWhite) {
     bool whiteQueenAlive = false;
     bool blackQueenAlive = false;
@@ -536,6 +526,7 @@ class ChessEngine {
     return false;
   }
 
+  ///This private method is used for Internal purpose.
   void _movePieceForMinMax(List<List<int>> currBoard, MovesModel moves) {
     try {
       currBoard[moves.targetPosition.row][moves.targetPosition.col] =
@@ -547,10 +538,12 @@ class ChessEngine {
     }
   }
 
+  ///ThisMethod is used to set the Pawn promotion.
   setPawnPromotion(CellPosition targetPos, ChessPiece piece) {
     _setPawnPromotion(_board, targetPos, piece);
   }
 
+  ///This private method is used for Internal purpose.
   _setPawnPromotion(
       List<List<int>> currBoard, CellPosition targetPos, ChessPiece piece) {
     if (piece != ChessPiece.king && piece != ChessPiece.pawn) {
@@ -561,6 +554,7 @@ class ChessEngine {
     }
   }
 
+  ///This private method is used for Internal purpose.
   _updateHalfMoveClock(MovesModel move) {
     if ((_board[move.currentPosition.row][move.currentPosition.col].abs() ==
             pawnPower) ||
@@ -574,12 +568,14 @@ class ChessEngine {
     }
   }
 
+  ///This private method is used for Internal purpose.
   _updateFullMoveNumber(MovesModel move) {
     if (_board[move.currentPosition.row][move.currentPosition.col] < 0) {
       _fullMoveNumber += 1;
     }
   }
 
+  /// This method use to move a piece in a board.
   void movePiece(MovesModel move) {
     _updateHalfMoveClock(move);
     _updateFullMoveNumber(move);
@@ -615,6 +611,7 @@ class ChessEngine {
     _notifyBoardChangeCallback();
   }
 
+  ///This private method is used for Internal purpose.
   _performCastling(List<List<int>> currBoard, MovesModel move) {
     currBoard[move.targetPosition.row][move.targetPosition.col] =
         currBoard[move.currentPosition.row][move.currentPosition.col];
@@ -635,6 +632,7 @@ class ChessEngine {
     }
   }
 
+  ///This private method is used for Internal purpose.
   bool _canPromotePawn(List<List<int>> currBoard, MovesModel move) {
     if (currBoard[move.currentPosition.row][move.currentPosition.col] ==
             pawnPower &&
@@ -644,6 +642,7 @@ class ChessEngine {
     return false;
   }
 
+  ///This private method is used for Internal purpose.
   GameOver? _checkIfGameOver(bool islastMoveByWhite) {
     if (_halfMoveClock > 99) {
       return GameOver.draw;
@@ -681,6 +680,7 @@ class ChessEngine {
     }
   }
 
+  ///ThisMethod used to get the FEN string.
   String getFenString(bool isWhiteTurn) {
     List<String> fenArr = [];
     String piecePosFen = '';
@@ -810,6 +810,7 @@ class ChessEngine {
     return fenArr.join(' ');
   }
 
+  ///This private method is used for Internal purpose.
   int _getPowerFromFENChar(String char) {
     switch (char) {
       case 'P':
@@ -841,7 +842,8 @@ class ChessEngine {
     }
   }
 
-  loadFenString(String fenString) {
+  ///This method used to Set the FEN string.
+  setFenString(String fenString) {
     List<String> fenParts = fenString.split(' ');
 
     // Parse piece positions component
@@ -944,6 +946,7 @@ class ChessEngine {
     _fullMoveNumber = int.tryParse(fenParts[5]) ?? 0;
   }
 
+  ///This method is to validate the FEN string.
   bool isValidFEN(String fenString) {
     // Split the FEN string into its components
     List<String> parts = fenString.split(' ');
@@ -989,6 +992,7 @@ class ChessEngine {
     return true;
   }
 
+  ///This private method is used for Internal purpose.
   bool _isValidPiecePlacement(String piecePlacement) {
     // Check if there are exactly 8 rows separated by '/'
     List<String> rows = piecePlacement.split('/');
@@ -1012,30 +1016,35 @@ class ChessEngine {
     return true;
   }
 
+  ///This private method is used for Internal purpose.
   bool _isValidActiveColor(String activeColor) {
     // Implement validation logic for active color segment
     // Ensure it is either 'w' or 'b'
     return activeColor == 'w' || activeColor == 'b';
   }
 
+  ///This private method is used for Internal purpose.
   bool _isValidCastlingAvailability(String castlingAvailability) {
     // Implement validation logic for castling availability segment
     // Ensure it consists of valid letters ('K', 'Q', 'k', 'q') or a hyphen '-'
     return RegExp(r'^(-|[KQkq]{0,4})$').hasMatch(castlingAvailability);
   }
 
+  ///This private method is used for Internal purpose.
   bool _isValidEnPassantSquare(String enPassantSquare) {
     // Implement validation logic for en passant target square segment
     // Ensure it is a valid square (e.g., 'a3', 'h6') or a hyphen '-'
     return RegExp(r'^(-|[a-h][36])$').hasMatch(enPassantSquare);
   }
 
+  ///This private method is used for Internal purpose.
   bool _isValidHalfmoveClock(String halfmoveClock) {
     // Implement validation logic for halfmove clock segment
     // Ensure it is a non-negative integer
     return int.tryParse(halfmoveClock) != null && int.parse(halfmoveClock) >= 0;
   }
 
+  ///This private method is used for Internal purpose.
   bool _isValidFullmoveNumber(String fullmoveNumber) {
     // Implement validation logic for fullmove number segment
     // Ensure it is a positive integer
@@ -1043,6 +1052,7 @@ class ChessEngine {
         int.parse(fullmoveNumber) >= 0;
   }
 
+  ///This private method is used for Internal purpose.
   _initializeBoard() {
     if (chessConfig.fenString.isEmpty) {
       List<List<int>> chessBoard = [
@@ -1142,7 +1152,7 @@ class ChessEngine {
       _board = chessBoard;
     } else {
       // Load FEN
-      loadFenString(chessConfig.fenString);
+      setFenString(chessConfig.fenString);
     }
   }
 }

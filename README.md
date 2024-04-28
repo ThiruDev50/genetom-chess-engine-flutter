@@ -40,12 +40,25 @@ ChessEngine chessEngine = ChessEngine(
 ```
 
 ## Exposed Methods and Uses 📚
-Here's a list of exposed methods along with their uses:
+Here's a list of exposed methods/callbacks along with their uses:
 
-| Command | Description |
+| Method/Callback | Description |
 | --- | --- |
-| git status | List all new or modified files |
-| `git diff` | Show file differences that haven't been staged |
+| `boardChangeCallback(newBoardData)` | This call back will trigger whenever there is a change in the board |
+| `gameOverCallback(gameOverStatus)` | This call back will trigger whenever the game over, and it contains the data about the game over (WhiteWins, BlackWins, Draw) |
+|`pawnPromotion(isWhitePiece,pawnPosition)` | This will trigger when a pawn promotion happens. |
+|`getHalfMoveClock()`      | Return the Half move Clock - Typically return int.   |
+|`getFullMoveNumber()`       | Return Full move number for the game.   |
+|`getBoardData()`      |  This will return the current board data which is of type List<List<int>>.  |
+|`getMovesLogsData()`      | This will return the move logs, So we can implement Undo move.    |
+|`generateBestMove()`      |  This will calculate the possible move of all the elements in the board, and based on difficulty it will return the best possible move.  |
+|`generateRandomMove()`| This will generate a random legal move.   |
+|`getValidMovesOfPeiceByPosition(board,pos)`      |  By taking the board and position of a piece by input, It will return all the possible legal moves.  |
+|`setPawnPromotion(pos,piece)`       |   Can use this to set pawn promotion. |
+|`movePiece(move)`      | By having the move, This will perform the movement of piece in the board.   |
+|`getFenString(isWhiteTurn)`       | This will get the current board posoition in the format of FEN string.   |
+|`setFenString(fenStr)`      |  This will take the FEN string as Input and Initialize the board according to that.  |
+|`isValidFEN(fenStr)`    |  Take a string as input and return true if it is a valid FEN.  |
 # Contact Me 📬
 
 Feel free to reach out to me for any inquiries or collaborations:
@@ -59,7 +72,7 @@ Feel free to reach out to me for any inquiries or collaborations:
 ## Get Started 🚀
 1. Clone this repository.
 2. Open the project in your preferred Flutter development environment.
-3. Run the project on your emulator or physical device.
+3. Run the project on your emulator or physical device or in browser.
 4. Start playing chess!
 
 ## Contribution 🤝

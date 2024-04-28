@@ -1,7 +1,7 @@
 name: genetom_chess_engine
-description: A powerful engine supports both player vs player and player vs computer modes.
+description: A powerful chess engine supports both player vs player and player vs computer modes.
 version: 0.0.2
-homepage: https://github.com/ThiruDev50/genetom-chess-engine-flutter
+repository: https://github.com/ThiruDev50/genetom-chess-engine-flutter
 
 environment:
   sdk: '>=3.0.6 <4.0.0'

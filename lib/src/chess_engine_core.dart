@@ -1,11 +1,15 @@
 // ignore_for_file: file_names
 
+/// This dentotes the chess piece.
 enum ChessPiece { pawn, rook, bishop, horse, queen, king, emptyCell }
 
+///This dentotes the gameover status.
 enum GameOver { whiteWins, blackWins, draw }
 
+///This denotes the difficulty.
 enum Difficulty { tooEasy, easy, medium, hard, asian }
 
+/// Mapping each piece with its power.
 Map<ChessPiece, int> chessPieceValue = {
   ChessPiece.pawn: pawnPower,
   ChessPiece.rook: rookPower,
@@ -24,7 +28,7 @@ const int queenPower = 900;
 const int kingPower = 20000;
 const int emptyCellPower = 0;
 
-//Square table value
+//Square table value.
 const List<List<double>> pawnSquareTable = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [50, 50, 50, 50, 50, 50, 50, 50],
@@ -35,6 +39,8 @@ const List<List<double>> pawnSquareTable = [
   [5, 10, 10, -20, -20, 10, 10, 5],
   [0, 0, 0, 0, 0, 0, 0, 0]
 ];
+
+///Horse Square Table.
 const List<List<double>> horseSquareTable = [
   [-50, -40, -30, -30, -30, -30, -40, -50],
   [-40, -20, 0, 0, 0, 0, -20, -40],
@@ -45,6 +51,8 @@ const List<List<double>> horseSquareTable = [
   [-40, -20, 0, 5, 5, 0, -20, -40],
   [-50, -40, -30, -30, -30, -30, -40, -50],
 ];
+
+///Bishop Square Table.
 const List<List<double>> bishopSquareTable = [
   [-20, -10, -10, -10, -10, -10, -10, -20],
   [-10, 0, 0, 0, 0, 0, 0, -10],
@@ -55,6 +63,8 @@ const List<List<double>> bishopSquareTable = [
   [-10, 5, 0, 0, 0, 0, 5, -10],
   [-20, -10, -10, -10, -10, -10, -10, -20],
 ];
+
+/// Queen Square Table.
 const List<List<double>> queenSquareTable = [
   [-20, -10, -10, -5, -5, -10, -10, -20],
   [-10, 0, 0, 0, 0, 0, 0, -10],
@@ -66,7 +76,7 @@ const List<List<double>> queenSquareTable = [
   [-20, -10, -10, -5, -5, -10, -10, -20]
 ];
 
-// Piece-square table for kings (early/mid game)
+/// Piece-square table for kings (early/mid game).
 const List<List<double>> kingMidGameSquareTable = [
   [-30, -40, -40, -50, -50, -40, -40, -30],
   [-30, -40, -40, -50, -50, -40, -40, -30],
@@ -77,6 +87,8 @@ const List<List<double>> kingMidGameSquareTable = [
   [20, 20, 0, 0, 0, 0, 20, 20],
   [20, 30, 10, 0, 0, 10, 30, 20]
 ];
+
+///King EndGame Square table.
 const List<List<double>> kingEndGameSquareTable = [
   [-50, -40, -30, -20, -20, -30, -40, -50],
   [-30, -20, -10, 0, 0, -10, -20, -30],
@@ -87,6 +99,8 @@ const List<List<double>> kingEndGameSquareTable = [
   [-30, -30, 0, 0, 0, 0, -30, -30],
   [-50, -30, -30, -30, -30, -30, -30, -50]
 ];
+
+///Rook Square Table.
 const List<List<double>> rookSquareTable = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [5, 10, 10, 10, 10, 10, 10, 5],
@@ -98,6 +112,7 @@ const List<List<double>> rookSquareTable = [
   [0, 0, 0, 5, 5, 0, 0, 0]
 ];
 
+///Chess Config Model.
 class ChessConfig {
   String fenString;
   Difficulty difficulty;
@@ -108,24 +123,28 @@ class ChessConfig {
       this.difficulty = Difficulty.easy});
 }
 
+///This defines the posistion of a piece in a 2D array.
 class CellPosition {
   int row;
   int col;
   CellPosition({required this.row, required this.col});
 }
 
+///This defines the moves.
 class MovesModel {
   CellPosition currentPosition;
   CellPosition targetPosition;
   MovesModel({required this.currentPosition, required this.targetPosition});
 }
 
+///This is for Move logs.
 class MovesLogModel {
   int piece;
   MovesModel move;
   MovesLogModel({required this.move, required this.piece});
 }
 
+///This is for calculate score, if we performed that move.
 class MoveScore {
   MovesModel? move;
   double score;

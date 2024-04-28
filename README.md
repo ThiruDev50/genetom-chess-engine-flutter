@@ -4,7 +4,7 @@ Welcome to the Genetom Chess Engine project! This engine supports both player vs
 
 
 ## Demo 🎥
-Check out the demo of the Genetom Chess Engine in action: [Demo Link](https://thirudev50.github.io/genetom-chess-engine-flutter/#/)
+Check out the demo of the Genetom Chess Engine in action: [Demo Link](https://thirudev50.github.io/genetom-chess-engine-flutter/#/){:target="_blank"}
 
 ![Chess Engine Demo](assets/chess_engine_demo.gif)
 
@@ -63,11 +63,11 @@ Here's a list of exposed methods/callbacks along with their uses:
 
 Feel free to reach out to me for any inquiries or collaborations:
 
-🌐 [My Portfolio](https://thirudev50.github.io/portfolio/)
+🌐 [My Portfolio](https://thirudev50.github.io/portfolio/){:target="_blank"}
 
-🔗 [My LinkedIn](https://www.linkedin.com/in/thirumoorthy-n/)
+🔗 [My LinkedIn](https://www.linkedin.com/in/thirumoorthy-n/){:target="_blank"}
 
-📧 Email: thiru.dev50@gmail.com
+📧 Email: thiru.dev50@gmail.com{:target="_blank"}
 
 ## Get Started 🚀
 1. Clone this repository.

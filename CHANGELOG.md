@@ -1,4 +1,4 @@
-## 0.0.3
+## 0.0.4
 
 * Chess Engine for Player Vs Player & Player Vs Computer
 * Can get all valid moves for a piece.

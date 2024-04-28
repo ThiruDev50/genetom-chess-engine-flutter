@@ -23,7 +23,11 @@ Add to the example pubspac.yaml
 
 Whenever there is a new change need to be pushed in Github pages,
 
-1. run flutter build web 
-2. go to example/build/web 
-4. Remove <base href="/"> from example/build/web/index.html
-3. Copy all the contents and place in this dir docs/
+- run flutter build web 
+- go to example/build/web 
+- Remove <base href="/"> from example/build/web/index.html
+- copy favicon.png from example root and paste under example/build/web
+- Copy all the files under example/build/web
+- pull the hosted branch gh-phages or switch to 'gh-phages'
+- Replace & Push  & dont merge with master
+

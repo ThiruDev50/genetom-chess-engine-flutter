@@ -4,7 +4,7 @@ Welcome to the Genetom Chess Engine project! This engine supports both player vs
 
 
 ## Demo 🎥
-Check out the demo of the Genetom Chess Engine in action: [Demo Link](demo.website.com)
+Check out the demo of the Genetom Chess Engine in action: [Demo Link](https://thirudev50.github.io/genetom-chess-engine-flutter/#/)
 
 ![Chess Engine Demo](assets/chess_engine_demo.gif)
 

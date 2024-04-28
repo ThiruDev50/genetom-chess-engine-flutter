@@ -875,7 +875,7 @@ class ChessEngine {
     //Can leave
 
     //3. Setting castling details
-    String castlingDetails = fenParts[3];
+    String castlingDetails = fenParts[2];
     if (!castlingDetails.contains('K')) {
       if (chessConfig.isPlayerAWhite) {
         _moveLogs.add(MovesLogModel(
@@ -897,13 +897,13 @@ class ChessEngine {
             move: MovesModel(
                 currentPosition: CellPosition(row: 0, col: 7),
                 targetPosition: CellPosition(row: 0, col: 0)),
-            piece: rookPower));
+            piece: -rookPower));
       } else {
         _moveLogs.add(MovesLogModel(
             move: MovesModel(
                 currentPosition: CellPosition(row: 7, col: 7),
                 targetPosition: CellPosition(row: 0, col: 0)),
-            piece: rookPower));
+            piece: -rookPower));
       }
     }
     if (!castlingDetails.contains('Q')) {
@@ -927,13 +927,13 @@ class ChessEngine {
             move: MovesModel(
                 currentPosition: CellPosition(row: 0, col: 0),
                 targetPosition: CellPosition(row: 0, col: 0)),
-            piece: rookPower));
+            piece: -rookPower));
       } else {
         _moveLogs.add(MovesLogModel(
             move: MovesModel(
                 currentPosition: CellPosition(row: 7, col: 0),
                 targetPosition: CellPosition(row: 0, col: 0)),
-            piece: rookPower));
+            piece: -rookPower));
       }
     }
     //4. En pasant

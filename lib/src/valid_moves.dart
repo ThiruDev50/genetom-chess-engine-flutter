@@ -672,7 +672,7 @@ class ValidMoves {
             //Contains Enemy piece which is not a threat, Hence breaking.
             break;
           }
-        } else {
+        } else {  
           // The Box is not empty and contain same team piece, So Not possible of check hence breaking.
           break;
         }

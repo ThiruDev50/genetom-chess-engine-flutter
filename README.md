@@ -1,35 +1,69 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Genetom Chess Engine - Flutter 🚀
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
-
-know whether this package might be useful for them.
-
-## Features
+Welcome to the Genetom Chess Engine project! This engine supports both player vs player and player vs computer modes, providing a seamless chess playing experience.
 
 
+## Demo 🎥
+Check out the demo of the Genetom Chess Engine in action: [Demo Link](demo.website.com)
 
-## Getting started
+![Chess Engine Demo](assets/chess_engine_demo.gif)
 
-start using the package.
+## Features 🌟
+- Play chess against another player or challenge the computer.
+- The computer evaluates all possible moves to provide a challenging opponent.
+- Clean and intuitive user interface built with Flutter.
 
-## Usage
+## Usage 🎮
+``` dart
+//Configuration for the Engine
+ChessConfig config = ChessConfig(
+        fenString: fenInput,
+        isPlayerAWhite: isPlayerWhite,
+        difficulty: Difficulty.medium);
 
-to `/example` folder.
-
-```dart
-const like = 'sample';
+//Initializing the Engine
+ChessEngine chessEngine = ChessEngine(
+      config,
+      pawnPromotion: (isWhitePawn, targetPosition) {
+        // This will trigger whenever a pawn promotion happens.
+        piece = ChessPiece.queen;
+        chessEngine.setPawnPromotion(targetPosition, piece);
+      },
+      boardChangeCallback: (newData) {
+        // This will call whenever the boar data updates.
+      },
+      gameOverCallback: (gameStatus) {
+        // This will trigger whenever the game ends (WhiteWins or BlackWins or Draw).
+      },
+    );
+    
 ```
 
-## Additional information
+## Exposed Methods and Uses 📚
+Here's a list of exposed methods along with their uses:
 
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+| Command | Description |
+| --- | --- |
+| git status | List all new or modified files |
+| `git diff` | Show file differences that haven't been staged |
+# Contact Me 📬
+
+Feel free to reach out to me for any inquiries or collaborations:
+
+🌐 [My Portfolio](https://thirudev50.github.io/portfolio/)
+
+🔗 [My LinkedIn](https://www.linkedin.com/in/thirumoorthy-n/)
+
+📧 Email: thiru.dev50@gmail.com
+
+## Get Started 🚀
+1. Clone this repository.
+2. Open the project in your preferred Flutter development environment.
+3. Run the project on your emulator or physical device.
+4. Start playing chess!
+
+## Contribution 🤝
+Contributions are welcome! Feel free to submit issues, feature requests, or pull requests to help improve this project.
+
+## License 📄
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

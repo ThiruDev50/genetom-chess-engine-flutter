@@ -1144,26 +1144,5 @@ class ChessEngine {
       // Load FEN
       loadFenString(chessConfig.fenString);
     }
-
-    /*  chessBoard = [
-      [-rookPower, 0, 0, 0, 0, 0, -kingPower, 0],
-      [
-        -pawnPower,
-        -pawnPower,
-        -pawnPower,
-        0,
-        -queenPower,
-        -rookPower,
-        0,
-        -pawnPower
-      ],
-      [0, 0, 0, 0, 0, -horsePower, 0, 0],
-      [0, 0, 0, -pawnPower, 0, 0, 0, -pawnPower],
-      [0, 0, 0, 0, 0, -bishopPower, -bishopPower, 0],
-      [0, bishopPower, pawnPower, 0, 0, pawnPower, 0, 0],
-      [pawnPower, pawnPower, 0, pawnPower, 0, kingPower, 0, 0],
-      [rookPower, 0, bishopPower, 0, 0, 0, horsePower, rookPower]
-    ];
-    return chessBoard; */
   }
 }

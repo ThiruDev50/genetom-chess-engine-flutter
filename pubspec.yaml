@@ -1,6 +1,6 @@
 name: genetom_chess_engine
-description: A chess engine for both player vs player and player vs computer.
-version: 0.0.1
+description: A powerful engine supports both player vs player and player vs computer modes.
+version: 0.0.2
 homepage: https://github.com/ThiruDev50/genetom-chess-engine-flutter
 
 environment:
@@ -21,7 +21,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  assets:
+    - assets/
   # To add assets to your package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
